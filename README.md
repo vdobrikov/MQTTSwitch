@@ -149,6 +149,8 @@ void callback(MQTTSwitch& mqttSwitch, boolean new_state){}
 
 #### void setRetained(bool retained)
 
+#### void resubscribe()
+
 #### void handleMQTTCallback(char* topci, byte* payload, unsigned int length)
 
 #### void onStateChange(MQTTSwitchOnStateChangeCallback callback)

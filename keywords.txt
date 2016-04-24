@@ -5,10 +5,6 @@ toggle	KEYWORD2
 isOn  KEYWORD2
 is	KEYWORD2
 setPayload	KEYWORD2
-setOutputPinInverted	KEYWORD2
-setOutputPin	KEYWORD2
 setRetained	KEYWORD2
 handleMQTTCallback	KEYWORD2
 resubscribe	KEYWORD2
-onBeforeStateChange	KEYWORD2
-onAfterStateChange	KEYWORD2
