@@ -53,7 +53,7 @@ install:
   # Arduino Library Installation not working in 1.6.5
   # - arduino --install-library "PubSubClient:2.6.0"
   - git clone https://github.com/knolleary/pubsubclient.git /usr/local/share/arduino/libraries/PubSubClient
-  - ln -s ${TRAVIS_BUILD_DIR}/MQTTSwitch /usr/local/share/arduino/libraries/MQTTSwitch
+  - ln -s ${TRAVIS_BUILD_DIR} /usr/local/share/arduino/libraries/MQTTSwitch
   
 script:
   # Run tests
