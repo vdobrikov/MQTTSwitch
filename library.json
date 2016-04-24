@@ -1,0 +1,19 @@
+{
+  "name": "MQTTSwitch",
+  "keywords": "mqtt, home automation, switch",
+  "description": "Control and update switches over MQTT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/r89m/MQTTSwitch"
+  },
+  "dependencies":[
+    {
+      "name": "PubSubClient",
+      "author": "Nick O'Leary"
+    }
+  ],
+  "include": "*/*.[ch]*",
+  "examples": "*/examples/*/*.ino",
+  "frameworks": "arduino",
+  "platforms": "*"
+}
