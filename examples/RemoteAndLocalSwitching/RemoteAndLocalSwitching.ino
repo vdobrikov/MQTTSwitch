@@ -45,8 +45,8 @@ void setup() {
   Switch2.init();
   
   // Setup pins
-  pinMode(onBoardTogglePin_LivingRoom, INPUT_PULLUP);
-  pinMode(onBoardTogglePin_Boiler, INPUT_PULLUP);
+  pinMode(onBoardTogglePin_One, INPUT_PULLUP);
+  pinMode(onBoardTogglePin_Two, INPUT_PULLUP);
 }
 
 void setup_wifi() {
