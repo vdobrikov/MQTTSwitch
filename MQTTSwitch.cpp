@@ -12,7 +12,7 @@ MQTTSwitch::MQTTSwitch(PubSubClient& client, const char* command_topic, const ch
   // Default to off, but don't perform any callbacks
   _current_state = false;
 
-  _on_state_change_callback = state_change_callback;
+  onStateChange(state_change_callback);
 }
 
 void MQTTSwitch::_setState(bool newState, bool force){
