@@ -1,6 +1,6 @@
-#Arduino MQTTSwitcy v1.0.0
+#Arduino MQTTSwitch v1.0.0
 https://github.com/r89m/MQTTSwitch
-LICENSE file
+
 Richard Miles November 2015
 
 ![CC BY-SA](http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-sa.png)
