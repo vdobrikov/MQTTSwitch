@@ -16,7 +16,7 @@ test: testMQTTSwitch testMQTTSimpleSwitch testMQTTLight
 # Build the Unit Under Test
 unitUnderTest: MQTTSwitch.cpp MQTTSwitch.h
 	@echo "Compile Unit Under Test"
-	@$(CC) $(CFLAGS) $(PWD)/MQTTSwitch.cpp -o $(PWD)/MQTTSwitch.o
+	@$(CXX) $(CFLAGS) $(PWD)/MQTTSwitch.cpp -o $(PWD)/MQTTSwitch.o
 	
 
 ###########################################
@@ -29,14 +29,14 @@ testMQTTSwitch: buildTestsMQTTSwitch
 
 buildTestsMQTTSwitch: unitUnderTest updateTestsMQTTSwitch $(OBJECTS)  
 	@echo "Build MQTTSwitchTests"
-	@$(CC) $(LDFLAGS) $(OBJECTS) $(TEST_DIR)/runners/MQTTSwitchTests.o -o $(TEST_DIR)/runners/MQTTSwitchTests.exe
+	@$(CXX) $(LDFLAGS) $(OBJECTS) $(TEST_DIR)/runners/MQTTSwitchTests.o -o $(TEST_DIR)/runners/MQTTSwitchTests.exe
 	
 	
 updateTestsMQTTSwitch: $(TEST_DIR)/MQTTSwitchTests.h
 	@echo "Generate MQTTSwitchTests class"
 	@test -d $(TEST_DIR)/runners || mkdir $(TEST_DIR)/runners
 	@python $(TEST_DIR)/AxxTest/cxxtest-4.4/bin/cxxtestgen --error-printer -w "MQTTSwitchTests" -o $(TEST_DIR)/runners/MQTTSwitchTests.cpp $(TEST_DIR)/MQTTSwitchTests.h
-	@$(CC) $(CFLAGS) $(TEST_DIR)/runners/MQTTSwitchTests.cpp -o $(TEST_DIR)/runners/MQTTSwitchTests.o
+	@$(CXX) $(CFLAGS) $(TEST_DIR)/runners/MQTTSwitchTests.cpp -o $(TEST_DIR)/runners/MQTTSwitchTests.o
 	
 
 ###########################################
@@ -49,14 +49,14 @@ testMQTTSimpleSwitch: buildTestsMQTTSimpleSwitch
 
 buildTestsMQTTSimpleSwitch: unitUnderTest updateTestsMQTTSimpleSwitch $(OBJECTS)  
 	@echo "Build MQTTSimpleSwitchTests"
-	@$(CC) $(LDFLAGS) $(OBJECTS) $(TEST_DIR)/runners/MQTTSimpleSwitchTests.o -o $(TEST_DIR)/runners/MQTTSimpleSwitchTests.exe
+	@$(CXX) $(LDFLAGS) $(OBJECTS) $(TEST_DIR)/runners/MQTTSimpleSwitchTests.o -o $(TEST_DIR)/runners/MQTTSimpleSwitchTests.exe
 	
 	
 updateTestsMQTTSimpleSwitch: $(TEST_DIR)/MQTTSimpleSwitchTests.h
 	@echo "Generate MQTTSimpleSwitchTests class"
 	@test -d $(TEST_DIR)/runners || mkdir $(TEST_DIR)/runners
 	@python $(TEST_DIR)/AxxTest/cxxtest-4.4/bin/cxxtestgen --error-printer -w "MQTTSimpleSwitchTests" -o $(TEST_DIR)/runners/MQTTSimpleSwitchTests.cpp $(TEST_DIR)/MQTTSimpleSwitchTests.h
-	@$(CC) $(CFLAGS) $(TEST_DIR)/runners/MQTTSimpleSwitchTests.cpp -o $(TEST_DIR)/runners/MQTTSimpleSwitchTests.o
+	@$(CXX) $(CFLAGS) $(TEST_DIR)/runners/MQTTSimpleSwitchTests.cpp -o $(TEST_DIR)/runners/MQTTSimpleSwitchTests.o
 	
 
 ###########################################
@@ -69,20 +69,20 @@ testMQTTLight: buildTestsMQTTLight
 
 buildTestsMQTTLight: unitUnderTest updateTestsMQTTLight $(OBJECTS)  
 	@echo "Build MQTTLightTests"
-	@$(CC) $(LDFLAGS) $(OBJECTS) $(TEST_DIR)/runners/MQTTLightTests.o -o $(TEST_DIR)/runners/MQTTLightTests.exe
+	@$(CXX) $(LDFLAGS) $(OBJECTS) $(TEST_DIR)/runners/MQTTLightTests.o -o $(TEST_DIR)/runners/MQTTLightTests.exe
 	
 	
 updateTestsMQTTLight: $(TEST_DIR)/MQTTLightTests.h
 	@echo "Generate MQTTLightTests class"
 	@test -d $(TEST_DIR)/runners || mkdir $(TEST_DIR)/runners
 	@python $(TEST_DIR)/AxxTest/cxxtest-4.4/bin/cxxtestgen --error-printer -w "MQTTLightTests" -o $(TEST_DIR)/runners/MQTTLightTests.cpp $(TEST_DIR)/MQTTLightTests.h
-	@$(CC) $(CFLAGS) $(TEST_DIR)/runners/MQTTLightTests.cpp -o $(TEST_DIR)/runners/MQTTLightTests.o
+	@$(CXX) $(CFLAGS) $(TEST_DIR)/runners/MQTTLightTests.cpp -o $(TEST_DIR)/runners/MQTTLightTests.o
 	
 	
 
 .cpp.o:
 	@echo "Compile source ($<)"
-	@$(CC) $(CFLAGS) $< -o $@
+	@$(CXX) $(CFLAGS) $< -o $@
 	
 clean:
 # Clean this folder
