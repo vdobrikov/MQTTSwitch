@@ -46,8 +46,8 @@ install:
   # Install Libraries
   # Arduino Library Installation not working in 1.6.5
   # - arduino --install-library "PubSubClient:2.6.0"
-  - git clone https://github.com/knolleary/pubsubclient.git /usr/local/share/arduino/libraries/PubSubClient
   - install_repo_as_library
+  - install_repo_as_library https://github.com/knolleary/pubsubclient.git
   
 script:
   # Run tests
