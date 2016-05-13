@@ -173,29 +173,29 @@ void MQTTLight::handleMQTTCallback(char* topic, byte* payload, unsigned int leng
 	  setBrightness(new_brightness);
   }
   else if(_rgb_command_topic != NULL && strcmp(topic, _rgb_command_topic) == 0) {
-		  // Parse the payload to retrieve the RGB elements
-		  char* str_pointer = (char*)payload;
-		  char* str_colour;
-		  uint8_t rgb[3];
-		  uint8_t rgb_index = 0;
+	  // Parse the payload to retrieve the RGB elements
+	  char* str_pointer = (char*)payload;
+	  char* str_colour;
+	  uint8_t rgb[3];
+	  uint8_t rgb_index = 0;
 
-		  while ((str_colour = strtok_r(str_pointer, ",", &str_pointer)) != NULL) {
-			  uint8_t colour = atoi(str_colour);
-			  
-			  // If the colour is equal to zero but the string was not equal to "0", an error occurred
-			  if(colour == 0 && strncmp(str_colour, "0", 2) != 0){
-				  return;
-			  }
-			  
-			  rgb[rgb_index] = colour;
-			  rgb_index++;
+	  while ((str_colour = strtok_r(str_pointer, ",", &str_pointer)) != NULL) {
+		  uint8_t colour = atoi(str_colour);
+		  
+		  // If the colour is equal to zero but the string was not equal to "0", an error occurred
+		  if(colour == 0 && strncmp(str_colour, "0", 2) != 0){
+			  return;
 		  }
-
-		  // The loop should have gone round 3 times for a valid response
-		  if (rgb_index == 3) {
-			  setRGB(rgb[0], rgb[1], rgb[2]);
-		  }
+		  
+		  rgb[rgb_index] = colour;
+		  rgb_index++;
 	  }
+	  
+	  // The loop should have gone round 3 times for a valid response
+	  if (rgb_index == 3) {
+		  setRGB(rgb[0], rgb[1], rgb[2]);
+	  }
+  }
 }
 
 void MQTTLight::setBrightness(uint8_t brightness){
