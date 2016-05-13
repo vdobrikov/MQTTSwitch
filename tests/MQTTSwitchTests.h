@@ -24,6 +24,7 @@ class MQTTSwitchTests : public CxxTest::TestSuite{
         const char* default_topic = "UNINITIALISED";
         byte payload_off[4] = {0x4F, 0x46, 0x46, 0x00}; // OFF
         byte payload_on[3] = {0x4F, 0x4E, 0x00};        // ON
+		byte invalid_payload[7] = {0x53, 0x57, 0x46, 0x54, 0x43, 0x48, 0x00}; // SWITCH
         
     public:
   
@@ -189,6 +190,13 @@ class MQTTSwitchTests : public CxxTest::TestSuite{
             
             TS_ASSERT_EQUALS(false, sw->isOn());
         }
+		
+		void testSubscribeHandleWrongPayload(){
+		
+			sw->handleMQTTCallback(const_cast<char*>(command_topic), invalid_payload, 7);
+			
+			TS_ASSERT_EQUALS(false, sw->isOn());
+		}
         
         
         
