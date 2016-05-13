@@ -174,8 +174,8 @@ class MQTTLightTests : public CxxTest::TestSuite{
             
 			setUpRGB();
 			
-            #define PAYLOAD_RGB_LENGTH 11
-            byte payload_rgb[PAYLOAD_RGB_LENGTH] = {0x31, 0x39, 0x33, 0x2C, 0x30, 0x32, 0x39, 0x2C, 0x32, 0x30, 0x30};  // 193,029,200
+            #define PAYLOAD_RGB_LENGTH 12
+            byte payload_rgb[PAYLOAD_RGB_LENGTH] = {0x31, 0x39, 0x33, 0x2C, 0x30, 0x32, 0x39, 0x2C, 0x32, 0x30, 0x30, 0x00};  // 193,029,200
             uint8_t r = 193;
             uint8_t g = 29;
             uint8_t b = 200;
