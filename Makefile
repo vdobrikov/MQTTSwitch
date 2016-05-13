@@ -87,10 +87,10 @@ updateTestsMQTTLight: $(TEST_DIR)/MQTTLightTests.h
 	
 clean:
 # Clean this folder
-	@- rm *.o || true
-	@- rm *.gcno || true
-	@- rm *.gcda || true
-	@- rm *.gcov || true
+	@- rm $(SRC_DIR)/*.o || true
+	@- rm $(SRC_DIR)/*.gcno || true
+	@- rm $(SRC_DIR)/*.gcda || true
+	@- rm $(SRC_DIR)/*.gcov || true
 	
 # Clear the tests/runners folder
 	@- rm -rf tests/runners
