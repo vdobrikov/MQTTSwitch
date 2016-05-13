@@ -1,10 +1,11 @@
 PWD=$(realpath ./)
+SRC_DIR=$(PWD)/src
 TEST_DIR=$(PWD)/tests
 CC=g++
-CFLAGS= -c -std=c++11 --coverage -fprofile-arcs -g -I $(TEST_DIR)/AxxTest/include -I $(TEST_DIR)/AxxTest/cxxtest-4.4 -I $(PWD) -I $(TEST_DIR)/dependencies/PubSubClient
+CFLAGS= -c -std=c++11 --coverage -fprofile-arcs -g -I $(TEST_DIR)/AxxTest/include -I $(TEST_DIR)/AxxTest/cxxtest-4.4 -I $(SRC_DIR) -I $(TEST_DIR)/dependencies/PubSubClient
 LDFLAGS=--coverage -fprofile-arcs
 SOURCES=$(wildcard $(TEST_DIR)/fakes/*.cpp) $(TEST_DIR)/AxxTest/include/Arduino.cpp $(TEST_DIR)/AxxTest/include/AxxTest.cpp
-OBJECTS=$(SOURCES:.cpp=.o) $(PWD)/MQTTSwitch.o
+OBJECTS=$(SOURCES:.cpp=.o) $(SRC_DIR)/MQTTSwitch.o
 
 
 # Build all the Unit Tests ready to be run
@@ -14,9 +15,9 @@ all: buildTestsMQTTSwitch buildTestsMQTTSimpleSwitch buildTestsMQTTLight
 test: testMQTTSwitch testMQTTSimpleSwitch testMQTTLight
 	
 # Build the Unit Under Test
-unitUnderTest: MQTTSwitch.cpp MQTTSwitch.h
+unitUnderTest: $(SRC_DIR)/MQTTSwitch.cpp $(SRC_DIR)/MQTTSwitch.h
 	@echo "Compile Unit Under Test"
-	@$(CXX) $(CFLAGS) $(PWD)/MQTTSwitch.cpp -o $(PWD)/MQTTSwitch.o
+	@$(CXX) $(CFLAGS) $(SRC_DIR)/MQTTSwitch.cpp -o $(SRC_DIR)/MQTTSwitch.o
 	
 
 ###########################################
