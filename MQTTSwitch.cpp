@@ -184,7 +184,14 @@ void MQTTLight::handleMQTTCallback(char* topic, byte* payload, unsigned int leng
 		  uint8_t rgb_index = 0;
 
 		  while ((str_colour = strtok_r(str_pointer, ",", &str_pointer)) != NULL) {
-			  rgb[rgb_index] = atoi(str_colour);
+			  uint8_t colour = atoi(str_colour);
+			  
+			  // If the colour is equal to zero but the string was not equal to "0", an error occurred
+			  if(colour == 0 && strncmp(str_colour, "0", 2) != 0){
+				  return;
+			  }
+			  
+			  rgb[rgb_index] = colour;
 			  rgb_index++;
 		  }
 

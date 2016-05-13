@@ -187,5 +187,46 @@ class MQTTLightTests : public CxxTest::TestSuite{
             TS_ASSERT_EQUALS(b, test_b);
         }
         
-       
+        void testSubscribeHandleRGB_InvalidPayloadAllText(){
+            
+			setUpRGB();
+			
+            #define PAYLOAD_RGB_INVALIDTEXT_LENGTH 6
+            byte payload_rgb[PAYLOAD_RGB_INVALIDTEXT_LENGTH] = {0x48, 0x45, 0x4C, 0x4C, 0x4F, 0x00};  // HELLO
+            uint8_t dummy_r = 193;
+            uint8_t dummy_g = 29;
+            uint8_t dummy_b = 200;
+			
+			// Set the colour to a random colour
+			light->setRGB(dummy_r, dummy_g, dummy_b);
+            
+            light->handleMQTTCallback(const_cast<char*>(rgb_command_topic), payload_rgb, PAYLOAD_RGB_LENGTH);
+                        
+			// Ensure that the colour hasn't changed
+            TS_ASSERT_EQUALS(dummy_r, test_r);
+            TS_ASSERT_EQUALS(dummy_g, test_g);
+            TS_ASSERT_EQUALS(dummy_b, test_b);
+        }
+        
+        void testSubscribeHandleRGB_InvalidPayloadProperlySeparatedText(){
+            
+			setUpRGB();
+			
+            #define PAYLOAD_RGB_INVALIDVALUES_LENGTH 12
+            byte payload_rgb[PAYLOAD_RGB_INVALIDVALUES_LENGTH] = {0x4F, 0x4E, 0x2C, 0x4F, 0x46, 0x46, 0x2C, 0x4F, 0x4E, 0x00};  // ON,OFF,ON
+            uint8_t dummy_r = 193;
+            uint8_t dummy_g = 29;
+            uint8_t dummy_b = 200;
+			
+			// Set the colour to a random colour
+			light->setRGB(dummy_r, dummy_g, dummy_b);
+            
+            light->handleMQTTCallback(const_cast<char*>(rgb_command_topic), payload_rgb, PAYLOAD_RGB_LENGTH);
+                        
+			// Ensure that the colour hasn't changed
+            TS_ASSERT_EQUALS(dummy_r, test_r);
+            TS_ASSERT_EQUALS(dummy_g, test_g);
+            TS_ASSERT_EQUALS(dummy_b, test_b);
+        }
+		
 };
