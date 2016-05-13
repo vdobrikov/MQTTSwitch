@@ -228,6 +228,8 @@ void MQTTLight::setRGB(uint8_t red, uint8_t green, uint8_t blue){
   uint8_t rgb_buffer_length = 12;
   char rgb_buffer[rgb_buffer_length];
   
+  // Using snprintf uses 16 bytes more program memory - no need to investigate
+  //	an alternative for now
   snprintf(rgb_buffer, rgb_buffer_length, "%03d,%03d,%03d", _rgb_red, _rgb_green, _rgb_blue);
 
   // Publish the new state
