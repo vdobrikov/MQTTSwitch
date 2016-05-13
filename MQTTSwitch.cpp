@@ -161,8 +161,18 @@ void MQTTLight::handleMQTTCallback(char* topic, byte* payload, unsigned int leng
   // Check if the topic is the brightness command topic, only if a brightness topic has been set
   if (_brightness_command_topic != NULL) {
 	  if (strcmp(topic, _brightness_command_topic) == 0) {
+		  // Convert the byte array into a c-string
+		  char* payload_str = (char*)payload;
+		  // Convert the c-string payload to a uint8_t
+		  uint8_t new_brightness = atoi(payload_str);
+		  
+		  // If the result is equal to zero but the string passed was not equal to "0" an error occurred.
+		  if(new_brightness == 0 && strncmp(payload_str, "0", 2) != 0){
+			  return;
+		  }
+		  
 		  // Get the new brightness from the payload
-		  setBrightness(atoi((char*)payload));
+		  setBrightness(new_brightness);
 	  }
   }
   if(_rgb_command_topic != NULL){

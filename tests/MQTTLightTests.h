@@ -135,6 +135,40 @@ class MQTTLightTests : public CxxTest::TestSuite{
                         
             TS_ASSERT_EQUALS(brightness, test_brightness);
         }
+		
+		void testSubscribeHandleBrightnessInvalid(){
+			
+			setUpBrightness();
+			
+			#define PAYLOAD_INVALID_BRIGHTNESS_LENGTH 3
+			byte payload_brightness[PAYLOAD_INVALID_BRIGHTNESS_LENGTH] = {0x4F, 0x4E, 0x00};	// ON
+			
+			// Set the brightness to some random value
+			int dummy_brightness = 30;
+			light->setBrightness(dummy_brightness);
+			
+			light->handleMQTTCallback(const_cast<char*>(brightness_command_topic), payload_brightness, PAYLOAD_BRIGHTNESS_LENGTH);
+			
+			// Ensure the brightness has not changed
+			TS_ASSERT_EQUALS(dummy_brightness, test_brightness);
+		}
+		
+		void testSubscribeHandleBrightnessZero(){
+			
+			setUpBrightness();
+			
+			#define PAYLOAD_ZERO_BRIGHTNESS_LENGTH 2
+			byte payload_brightness[PAYLOAD_ZERO_BRIGHTNESS_LENGTH] = {0x30, 0x00};	// 0
+			
+			// Set the brightness to some random value
+			int dummy_brightness = 55;
+			light->setBrightness(dummy_brightness);
+			
+			light->handleMQTTCallback(const_cast<char*>(brightness_command_topic), payload_brightness, PAYLOAD_BRIGHTNESS_LENGTH);
+			
+			// Ensure the brightness is now zero
+			TS_ASSERT_EQUALS(0, test_brightness);
+		}
         
         void testSubscribeHandleRGB(){
             
