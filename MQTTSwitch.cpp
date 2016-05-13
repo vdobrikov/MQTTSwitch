@@ -157,10 +157,8 @@ void MQTTLight::handleMQTTCallback(char* topic, byte* payload, unsigned int leng
   // Do simple ON / OFF handling using the base class' method
   MQTTSwitch::handleMQTTCallback(topic, payload, length);
   
-  // TODO: Tests for NULL brightness topic and RGB topic
   // Check if the topic is the brightness command topic, only if a brightness topic has been set
-  if (_brightness_command_topic != NULL) {
-	  if (strcmp(topic, _brightness_command_topic) == 0) {
+  if (_brightness_command_topic != NULL && strcmp(topic, _brightness_command_topic) == 0) {
 		  // Convert the byte array into a c-string
 		  char* payload_str = (char*)payload;
 		  // Convert the c-string payload to a uint8_t
@@ -173,10 +171,8 @@ void MQTTLight::handleMQTTCallback(char* topic, byte* payload, unsigned int leng
 		  
 		  // Get the new brightness from the payload
 		  setBrightness(new_brightness);
-	  }
   }
-  if(_rgb_command_topic != NULL){
-	  if (strcmp(topic, _rgb_command_topic) == 0) {
+  else if(_rgb_command_topic != NULL && strcmp(topic, _rgb_command_topic) == 0) {
 		  // Parse the payload to retrieve the RGB elements
 		  char* str_pointer = (char*)payload;
 		  char* str_colour;
@@ -200,7 +196,6 @@ void MQTTLight::handleMQTTCallback(char* topic, byte* payload, unsigned int leng
 			  setRGB(rgb[0], rgb[1], rgb[2]);
 		  }
 	  }
-  }
 }
 
 void MQTTLight::setBrightness(uint8_t brightness){
