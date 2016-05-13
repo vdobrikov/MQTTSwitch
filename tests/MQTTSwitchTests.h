@@ -178,7 +178,7 @@ class MQTTSwitchTests : public CxxTest::TestSuite{
             
             sw->turnOn();
             
-            sw->handleMQTTCallback(const_cast<char*>(command_topic), payload_off, 3);
+            sw->handleMQTTCallback(const_cast<char*>(command_topic), payload_off, 4);
             
             TS_ASSERT_EQUALS(false, sw->isOn());
         }
