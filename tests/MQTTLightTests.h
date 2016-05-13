@@ -127,8 +127,8 @@ class MQTTLightTests : public CxxTest::TestSuite{
        
 			setUpBrightness();
 	   
-            #define PAYLOAD_BRIGHTNESS_LENGTH 2
-            byte payload_brightness[PAYLOAD_BRIGHTNESS_LENGTH] = {0x37, 0x34};         // 74
+            #define PAYLOAD_BRIGHTNESS_LENGTH 3
+            byte payload_brightness[PAYLOAD_BRIGHTNESS_LENGTH] = {0x37, 0x34, 0x00};         // 74
             int brightness = 74;
             
             light->handleMQTTCallback(const_cast<char*>(brightness_command_topic), payload_brightness, PAYLOAD_BRIGHTNESS_LENGTH);
