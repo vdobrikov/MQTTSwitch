@@ -1,7 +1,7 @@
 PWD=$(realpath ./)
 SRC_DIR=$(PWD)/src
 TEST_DIR=$(PWD)/tests
-CC=g++
+CXX=g++
 CFLAGS= -c -std=c++11 --coverage -fprofile-arcs -g -I $(TEST_DIR)/AxxTest/include -I $(TEST_DIR)/AxxTest/cxxtest-4.4 -I $(SRC_DIR) -I $(TEST_DIR)/dependencies/PubSubClient
 LDFLAGS=--coverage -fprofile-arcs
 SOURCES=$(wildcard $(TEST_DIR)/fakes/*.cpp) $(TEST_DIR)/AxxTest/include/Arduino.cpp $(TEST_DIR)/AxxTest/include/AxxTest.cpp
