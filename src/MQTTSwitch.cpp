@@ -1,9 +1,6 @@
 #include "MQTTSwitch.h"
 
-MQTTSwitch::MQTTSwitch(PubSubClient& client, const char* command_topic, const char* state_topic, MQTTSwitchOnStateChangeCallback state_change_callback){
-
-  // Store a reference to the MQTT client
-  _client = &client;
+MQTTSwitch::MQTTSwitch(const char* command_topic, const char* state_topic, MQTTSwitchOnStateChangeCallback state_change_callback){
 
   // Store the command and state topics
   _command_topic = command_topic;
@@ -15,8 +12,27 @@ MQTTSwitch::MQTTSwitch(PubSubClient& client, const char* command_topic, const ch
   onStateChange(state_change_callback);
 }
 
+MQTTSwitch::MQTTSwitch(PubSubClient& client, const char* command_topic, const char* state_topic, MQTTSwitchOnStateChangeCallback state_change_callback){
+
+  // Store a reference to the MQTT client
+  setMqttClient(client);
+
+  // Store the command and state topics
+  _command_topic = command_topic;
+  _state_topic = state_topic;
+
+  // Default to off, but don't perform any callbacks
+  _current_state = false;
+
+  onStateChange(state_change_callback);
+}
+
+void MQTTSwitch::setMqttClient(PubSubClient& client) {
+    _client = &client;
+}
+
 void MQTTSwitch::_setState(bool newState, bool force){
-	
+
     // Only update the state if it has changed or if this is the first time the state has been set
     if(force || (_current_state != newState)){
         _current_state = newState;
@@ -47,17 +63,17 @@ void MQTTSwitch::turnOn(bool force){
 }
 
 void MQTTSwitch::turnOff(){
- 
+
     turnOff(false);
 }
 
 void MQTTSwitch::turnOff(bool force){
-	
+
 	_setState(false, force);
 }
 
 void MQTTSwitch::toggle(){
-	
+
   if(isOn()){
     turnOff();
   } else {
@@ -66,12 +82,12 @@ void MQTTSwitch::toggle(){
 }
 
 bool MQTTSwitch::isOn(){
-	
+
   return _current_state;
 }
 
 bool MQTTSwitch::is(MQTTSwitch& mqtt_switch){
-	
+
   return (this == &mqtt_switch);
 }
 
@@ -87,38 +103,44 @@ void MQTTSwitch::setRetained(bool retained){
 }
 
 void MQTTSwitch::handleMQTTCallback(char* topic, byte* payload, unsigned int length){
-    
+
   // Check whether the MQTT topic matches the command topic. If so, handle it...
   if(strcmp(topic, _command_topic) == 0){
     if (strncmp((char*) payload, _payload_on, length) == 0){
       turnOn();
     } else if (strncmp((char*) payload, _payload_off, length) == 0){
       turnOff();
-    }    
+    }
   }
 }
 
 bool MQTTSwitch::resubscribe(){
-	
+
   return _client->subscribe(_command_topic);
 }
 
 void MQTTSwitch::onStateChange(MQTTSwitchOnStateChangeCallback callback){
 
-  _on_state_change_callback = callback;	
+  _on_state_change_callback = callback;
 }
 
 
 
 
+MQTTSimpleSwitch::MQTTSimpleSwitch(const char* command_topic, const char* state_topic, uint8_t pin)
+  : MQTTSwitch(command_topic, state_topic, MQTTSimpleSwitch::_pin_change_function){
+
+  setOutputPin(pin, false);
+}
+
 MQTTSimpleSwitch::MQTTSimpleSwitch(PubSubClient& client, const char* command_topic, const char* state_topic, uint8_t pin)
   : MQTTSimpleSwitch(client, command_topic, state_topic, pin, false){
-  
+
 }
 
 MQTTSimpleSwitch::MQTTSimpleSwitch(PubSubClient& client, const char* command_topic, const char* state_topic, uint8_t pin, bool inverted)
   : MQTTSwitch(client, command_topic, state_topic, MQTTSimpleSwitch::_pin_change_function){
-  
+
   setOutputPin(pin, inverted);
 }
 
@@ -132,7 +154,7 @@ void MQTTSimpleSwitch::setOutputPin(uint8_t output_pin, bool inverted){
 
   _pin = output_pin;
   _pin_inverted = inverted;
-  
+
   // Set pin to output
   pinMode(output_pin, OUTPUT);
   // Pin defaults to being off
@@ -148,27 +170,27 @@ MQTTLight::MQTTLight(PubSubClient& client, const char* command_topic, const char
 	_on_brightness_change_callback = NULL;
 	_on_rgb_change_callback = NULL;
 	_brightness_state_topic = NULL;
-        
+
 }
 
 
 void MQTTLight::handleMQTTCallback(char* topic, byte* payload, unsigned int length){
-	
+
   // Do simple ON / OFF handling using the base class' method
   MQTTSwitch::handleMQTTCallback(topic, payload, length);
-  
+
   // Check if the topic is the brightness command topic, only if a brightness topic has been set
   if (_brightness_command_topic != NULL && strcmp(topic, _brightness_command_topic) == 0) {
 	  // Convert the byte array into a c-string
 	  char* payload_str = (char*)payload;
 	  // Convert the c-string payload to a uint8_t
 	  uint8_t new_brightness = atoi(payload_str);
-	  
+
 	  // If the result is equal to zero but the string passed was not equal to "0" an error occurred.
 	  if(new_brightness == 0 && strncmp(payload_str, "0", 2) != 0){
 		  return;
 	  }
-	  
+
 	  // Get the new brightness from the payload
 	  setBrightness(new_brightness);
   }
@@ -181,16 +203,16 @@ void MQTTLight::handleMQTTCallback(char* topic, byte* payload, unsigned int leng
 
 	  while ((str_colour = strtok_r(str_pointer, ",", &str_pointer)) != NULL) {
 		  uint8_t colour = atoi(str_colour);
-		  
+
 		  // If the colour is equal to zero but the string was not equal to "0", an error occurred
 		  if(colour == 0 && strncmp(str_colour, "0", 2) != 0){
 			  return;
 		  }
-		  
+
 		  rgb[rgb_index] = colour;
 		  rgb_index++;
 	  }
-	  
+
 	  // The loop should have gone round 3 times for a valid response
 	  if (rgb_index == 3) {
 		  setRGB(rgb[0], rgb[1], rgb[2]);
@@ -199,21 +221,21 @@ void MQTTLight::handleMQTTCallback(char* topic, byte* payload, unsigned int leng
 }
 
 void MQTTLight::setBrightness(uint8_t brightness){
-      
+
       //std::cout << std::endl << std::endl << "New Brightness: " << brightness;
-      
+
   // Only carry on if the brightness is different
   if(_brightness == brightness){
     return;
   }
 
   _brightness = brightness;
-  
+
   // Call the brightness change callback if one is defined
   if(_on_brightness_change_callback){
     _on_brightness_change_callback(*this, brightness);
-  }	
-  
+  }
+
   // Publish the new brightness if a brightness topic exists
   if (_brightness_state_topic) {
 	  char brightness_buffer[4];
@@ -239,7 +261,7 @@ void MQTTLight::setRGB(uint8_t red, uint8_t green, uint8_t blue){
 
   uint8_t rgb_buffer_length = 12;
   char rgb_buffer[rgb_buffer_length];
-  
+
   // Using snprintf uses 16 bytes more program memory - no need to investigate
   //	an alternative for now
   snprintf(rgb_buffer, rgb_buffer_length, "%03d,%03d,%03d", _rgb_red, _rgb_green, _rgb_blue);
@@ -249,14 +271,14 @@ void MQTTLight::setRGB(uint8_t red, uint8_t green, uint8_t blue){
 }
 
 void MQTTLight::setBrightnessCallback(const char* command_topic, const char* state_topic, MQTTLightOnBrightnessChangeCallback callback){
-    
+
     _brightness_command_topic = command_topic;
     _brightness_state_topic = state_topic;
     _on_brightness_change_callback = callback;
 }
 
 void MQTTLight::setRGBCallback(const char* command_topic, const char* state_topic, MQTTLightOnRGBChangeCallback callback){
-    
+
     _rgb_command_topic = command_topic;
     _rgb_state_topic = state_topic;
     _on_rgb_change_callback = callback;

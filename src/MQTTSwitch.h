@@ -33,9 +33,11 @@ class MQTTSwitch{
     void turnOn(bool);
     void turnOff(bool);
     void _setState(bool, bool);
-  
+
   public:
+    MQTTSwitch(const char*, const char*, MQTTSwitchOnStateChangeCallback);
     MQTTSwitch(PubSubClient&, const char*, const char*, MQTTSwitchOnStateChangeCallback);
+    void setMqttClient(PubSubClient&);
 	void init(bool initialState = false);
     void turnOn();
     void turnOff();
@@ -58,6 +60,7 @@ class MQTTSimpleSwitch : public MQTTSwitch{
     void setOutputPin(uint8_t, bool);
 
   public:
+    MQTTSimpleSwitch(const char*, const char*, uint8_t);
     MQTTSimpleSwitch(PubSubClient&, const char*, const char*, uint8_t);
     MQTTSimpleSwitch(PubSubClient&, const char*, const char*, uint8_t, bool);
 };
@@ -93,5 +96,3 @@ class MQTTLight : public MQTTSwitch{
 };
 
 #endif /* MQTTSWITCH_H_ */
-
-
