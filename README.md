@@ -1,4 +1,5 @@
 # MQTTSwitch
+## DO NOT USE THIS LIB FOR THE MOMENT. WORK IS STILL IN PROGRESS. USE ORIGINAL REPOSITORY INSTEAD
 
 [![Build Status](https://travis-ci.org/r89m/MQTTSwitch.svg?branch=master)](https://travis-ci.org/r89m/MQTTSwitch)
 [![Coverage Status](https://coveralls.io/repos/github/r89m/MQTTSwitch/badge.svg?branch=master)](https://coveralls.io/github/r89m/MQTTSwitch?branch=master)

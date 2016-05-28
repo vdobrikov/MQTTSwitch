@@ -10,6 +10,16 @@
 
 #include "PubSubClient.h"
 
+#define MQTTSWITCH_DEBUG
+
+#if defined(MQTTSWITCH_DEBUG)
+#define MQTTSWITCH_PRINT(str) Serial.print(str)
+#define MQTTSWITCH_PRINTLN(str) Serial.println(str)
+#else
+#define MQTTSWITCH_PRINT(str)
+#define MQTTSWITCH_PRINTLN(str)
+#endif
+
 // Forward definition
 class MQTTSwitch;
 class MQTTLight;
@@ -23,6 +33,7 @@ class MQTTSwitch{
   protected:
     PubSubClient* _client;
     bool _current_state = false;
+    bool needToPublishState = false;
     const char* _command_topic;
     const char* _state_topic;
     const char* _payload_on = "ON";
@@ -30,24 +41,27 @@ class MQTTSwitch{
     bool _retained = true;
     MQTTSwitchOnStateChangeCallback _on_state_change_callback;
 
-    void turnOn(bool);
-    void turnOff(bool);
-    void _setState(bool, bool);
+    void turnOn(bool, bool);
+    void turnOff(bool, bool);
+    void _setState(bool, bool, bool);
+    void publishState();
 
   public:
     MQTTSwitch(const char*, const char*, MQTTSwitchOnStateChangeCallback);
     MQTTSwitch(PubSubClient&, const char*, const char*, MQTTSwitchOnStateChangeCallback);
-    void setMqttClient(PubSubClient&);
+    void setMqttClient(PubSubClient*);
 	void init(bool initialState = false);
     void turnOn();
     void turnOff();
     void toggle();
+    void toggle(bool);
     bool isOn();
     bool is(MQTTSwitch&);
     void setStatePayload(const char*, const char*);
     void setRetained(bool);
     virtual void handleMQTTCallback(char*, byte*, unsigned int);
     bool resubscribe();
+    void loop();
 
     void onStateChange(MQTTSwitchOnStateChangeCallback);
 };

@@ -15,9 +15,9 @@ MQTTSwitch::MQTTSwitch(const char* command_topic, const char* state_topic, MQTTS
 MQTTSwitch::MQTTSwitch(PubSubClient& client, const char* command_topic, const char* state_topic, MQTTSwitchOnStateChangeCallback state_change_callback){
 
   // Store a reference to the MQTT client
-  setMqttClient(client);
+  setMqttClient(&client);
 
-  // Store the command and state topics
+  // Store the command and state topicsM
   _command_topic = command_topic;
   _state_topic = state_topic;
 
@@ -27,11 +27,13 @@ MQTTSwitch::MQTTSwitch(PubSubClient& client, const char* command_topic, const ch
   onStateChange(state_change_callback);
 }
 
-void MQTTSwitch::setMqttClient(PubSubClient& client) {
-    _client = &client;
+void MQTTSwitch::setMqttClient(PubSubClient* client) {
+    _client = client;
+    MQTTSWITCH_PRINT("MQTT switch: Setting MQTT client. isConnected = ");
+    MQTTSWITCH_PRINTLN(_client->connected());
 }
 
-void MQTTSwitch::_setState(bool newState, bool force){
+void MQTTSwitch::_setState(bool newState, bool force, bool publishNow){
 
     // Only update the state if it has changed or if this is the first time the state has been set
     if(force || (_current_state != newState)){
@@ -42,34 +44,51 @@ void MQTTSwitch::_setState(bool newState, bool force){
             _on_state_change_callback(*this, newState);
         }
 
-        // Publish the new state
-        _client->publish(_state_topic, (newState) ? _payload_on : _payload_off, _retained);
+        if (publishNow) {
+            publishState();
+        } else {
+            needToPublishState = true;
+        }
+    }
+}
+
+void MQTTSwitch::publishState() {
+    // Publish the new state
+    needToPublishState = true;
+    if (_client != NULL && _client->connected()) {
+        MQTTSWITCH_PRINT("Publishing: ");
+        MQTTSWITCH_PRINT(_state_topic);
+        MQTTSWITCH_PRINT(" - ");
+        MQTTSWITCH_PRINTLN((_current_state) ? _payload_on : _payload_off);
+        _client->publish(_state_topic, (_current_state) ? _payload_on : _payload_off, _retained);
+        needToPublishState = false;
+        MQTTSWITCH_PRINTLN("Publish OK");
     }
 }
 
 void MQTTSwitch::init(bool initialState) {
 
-	_setState(initialState, true);
+	_setState(initialState, true, true);
 }
 
 void MQTTSwitch::turnOn(){
 
-    turnOn(false);
+    turnOn(false, true);
 }
 
-void MQTTSwitch::turnOn(bool force){
+void MQTTSwitch::turnOn(bool force, bool publishNow){
 
-	_setState(true, force);
+	_setState(true, force, publishNow);
 }
 
 void MQTTSwitch::turnOff(){
 
-    turnOff(false);
+    turnOff(false, true);
 }
 
-void MQTTSwitch::turnOff(bool force){
+void MQTTSwitch::turnOff(bool force, bool publishNow){
 
-	_setState(false, force);
+	_setState(false, force, publishNow);
 }
 
 void MQTTSwitch::toggle(){
@@ -79,6 +98,14 @@ void MQTTSwitch::toggle(){
   } else {
     turnOn();
   }
+}
+
+void MQTTSwitch::toggle(bool publishNow){
+    if(isOn()){
+      turnOff(false, publishNow);
+    } else {
+      turnOn(false, publishNow);
+    }
 }
 
 bool MQTTSwitch::isOn(){
@@ -117,11 +144,21 @@ void MQTTSwitch::handleMQTTCallback(char* topic, byte* payload, unsigned int len
 bool MQTTSwitch::resubscribe(){
 
   return _client->subscribe(_command_topic);
+  if (needToPublishState) {
+      publishState();
+  }
 }
 
 void MQTTSwitch::onStateChange(MQTTSwitchOnStateChangeCallback callback){
 
   _on_state_change_callback = callback;
+}
+
+void MQTTSwitch::loop(){
+
+  if (needToPublishState) {
+      publishState();
+  }
 }
 
 
@@ -158,7 +195,7 @@ void MQTTSimpleSwitch::setOutputPin(uint8_t output_pin, bool inverted){
   // Set pin to output
   pinMode(output_pin, OUTPUT);
   // Pin defaults to being off
-  turnOff(true);
+  turnOff(true, true);
 }
 
 
