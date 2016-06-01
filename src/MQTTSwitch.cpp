@@ -164,32 +164,32 @@ void MQTTSwitch::loop(){
 
 
 
-MQTTSimpleSwitch::MQTTSimpleSwitch(const char* command_topic, const char* state_topic, uint8_t pin)
+MQTTSimpleSwitch::MQTTSimpleSwitch(const char* command_topic, const char* state_topic, uint8_t pin_relay)
   : MQTTSwitch(command_topic, state_topic, MQTTSimpleSwitch::_pin_change_function){
 
-  setOutputPin(pin, false);
+  setOutputPin(pin_relay, false);
 }
 
-MQTTSimpleSwitch::MQTTSimpleSwitch(PubSubClient& client, const char* command_topic, const char* state_topic, uint8_t pin)
-  : MQTTSimpleSwitch(client, command_topic, state_topic, pin, false){
+MQTTSimpleSwitch::MQTTSimpleSwitch(PubSubClient& client, const char* command_topic, const char* state_topic, uint8_t pin_relay)
+  : MQTTSimpleSwitch(client, command_topic, state_topic, pin_relay, false){
 
 }
 
-MQTTSimpleSwitch::MQTTSimpleSwitch(PubSubClient& client, const char* command_topic, const char* state_topic, uint8_t pin, bool inverted)
+MQTTSimpleSwitch::MQTTSimpleSwitch(PubSubClient& client, const char* command_topic, const char* state_topic, uint8_t pin_relay, bool inverted)
   : MQTTSwitch(client, command_topic, state_topic, MQTTSimpleSwitch::_pin_change_function){
 
-  setOutputPin(pin, inverted);
+  setOutputPin(pin_relay, inverted);
 }
 
 void MQTTSimpleSwitch::_pin_change_function(MQTTSwitch& mqtt_switch, bool new_state){
 
   MQTTSimpleSwitch& simple = (MQTTSimpleSwitch&)mqtt_switch;
-  digitalWrite(simple._pin, new_state != simple._pin_inverted);
+  digitalWrite(simple._pin_relay, new_state != simple._pin_inverted);
 }
 
 void MQTTSimpleSwitch::setOutputPin(uint8_t output_pin, bool inverted){
 
-  _pin = output_pin;
+  _pin_relay = output_pin;
   _pin_inverted = inverted;
 
   // Set pin to output
@@ -197,6 +197,36 @@ void MQTTSimpleSwitch::setOutputPin(uint8_t output_pin, bool inverted){
   // Pin defaults to being off
   turnOff(true, true);
 }
+
+
+
+
+MQTTButtonSwitch::MQTTButtonSwitch(const char* command_topic, const char* state_topic, uint8_t pin_relay, uint8_t pin_button)
+  : MQTTSimpleSwitch(command_topic, state_topic, pin_relay) {
+
+  setButtonPin(pin_button);
+}
+
+void MQTTButtonSwitch::setButtonPin(uint8_t pin_button) {
+    _pin_button = pin_button;
+    pinMode(_pin_button, INPUT_PULLUP);
+}
+
+uint8_t MQTTButtonSwitch::getButtonPin() {
+    return _pin_button;
+}
+
+void MQTTButtonSwitch::setDebounceTime(int ms) {
+    buttonDebounceTimeMs = ms;
+}
+
+void MQTTButtonSwitch::triggerButtonFromInterrupt() {
+    if((millis() - lastButtonTriggered) >= buttonDebounceTimeMs) {
+        toggle(false);
+        lastButtonTriggered = millis();
+    }
+}
+
 
 
 

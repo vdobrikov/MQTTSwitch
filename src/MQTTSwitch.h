@@ -20,6 +20,8 @@
 #define MQTTSWITCH_PRINTLN(str)
 #endif
 
+#define DEFAULT_DEBOUNCE_TIME_MS 25
+
 // Forward definition
 class MQTTSwitch;
 class MQTTLight;
@@ -68,7 +70,7 @@ class MQTTSwitch{
 
 class MQTTSimpleSwitch : public MQTTSwitch{
   protected:
-    uint8_t _pin;
+    uint8_t _pin_relay;
     bool _pin_inverted = false;
     static void _pin_change_function(MQTTSwitch&, bool);
     void setOutputPin(uint8_t, bool);
@@ -77,6 +79,21 @@ class MQTTSimpleSwitch : public MQTTSwitch{
     MQTTSimpleSwitch(const char*, const char*, uint8_t);
     MQTTSimpleSwitch(PubSubClient&, const char*, const char*, uint8_t);
     MQTTSimpleSwitch(PubSubClient&, const char*, const char*, uint8_t, bool);
+};
+
+class MQTTButtonSwitch : public MQTTSimpleSwitch{
+  protected:
+    uint8_t _pin_button;
+    volatile uint32_t lastButtonTriggered = 0;
+    int buttonDebounceTimeMs = DEFAULT_DEBOUNCE_TIME_MS;
+
+    void setButtonPin(uint8_t);
+
+  public:
+    MQTTButtonSwitch(const char*, const char*, uint8_t, uint8_t);
+    uint8_t getButtonPin();
+    void setDebounceTime(int ms);
+    void triggerButtonFromInterrupt();
 };
 
 class MQTTLight : public MQTTSwitch{
